@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>台灣空氣品質即時視覺化儀表板</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Font Awesome Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="dashboard">
+
+    <section class="header">
+      <div class="header-top">
+        <div>
+          <h1>台灣空氣品質即時視覺化儀表板</h1>
+          <p>
+            本網站串接台灣環境部 AQI JSON API，自動取得所有資料欄位，
+            並可依照選定指標，例如 AQI、PM2.5、PM10、O3、NO2、SO2、CO 等建立圖表與資料表。
+          </p>
+          <div class="api-status" id="apiStatus">資料載入中...</div>
+        </div>
+
+        <button class="refresh-btn" onclick="fetchAQIData()">
+          重新整理資料
+        </button>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="card">
+        <div class="card-icon green-bg">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <h3>目前指標平均值</h3>
+        <div class="value" id="avgMetric">--</div>
+        <div class="desc" id="avgMetricDesc">--</div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon red-bg">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3>目前指標最高值</h3>
+        <div class="value" id="maxMetric">--</div>
+        <div class="desc" id="maxMetricSite">--</div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon gray-bg">
+          <i class="fa-solid fa-database"></i>
+        </div>
+        <h3>有效資料筆數</h3>
+        <div class="value" id="validCount">--</div>
+        <div class="desc">依目前指標過濾後資料</div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon purple-bg">
+          <i class="fa-solid fa-table-columns"></i>
+        </div>
+
+        <h3>API 欄位數量</h3>
+        <div class="value" id="fieldCount">--</div>
+        <div class="desc">自動讀取所有欄位</div>
+
+        <div class="update-time-box">
+          <i class="fa-solid fa-clock"></i>
+          <span>更新時間：</span>
+          <strong id="apiUpdateTime">--</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="搜尋縣市、測站或狀態，例如：高雄、台北、普通"
+      />
+
+      <select id="countyFilter">
+        <option value="all">全部縣市</option>
+      </select>
+
+      <select id="metricSelect">
+        <option value="">選擇指標</option>
+      </select>
+    </section>
+
+    <section class="field-info">
+      <h2>API 回傳欄位</h2>
+      <div class="field-list" id="fieldList">
+        <span class="field-tag">資料載入中...</span>
+      </div>
+    </section>
+
+    <section class="charts">
+      <div class="panel">
+        <h2 id="barChartTitle">指標 Top 10 長條圖</h2>
+        <div class="panel-desc">
+          依照目前選定指標由高到低排序，顯示前 10 名測站。
+        </div>
+        <div class="chart-box">
+          <canvas id="metricBarChart"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 id="lineChartTitle">指標 Top 10 折線圖</h2>
+        <div class="panel-desc">
+          使用 Top 10 排名順序作為 X 軸，呈現不同測站的指標變化。
+        </div>
+        <div class="chart-box">
+          <canvas id="metricLineChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>即時空氣品質完整資料表</h2>
+      <div class="panel-desc">
+        顯示 API 回傳的所有欄位。資料表會依目前選定指標過濾有效數值，每頁顯示 20 筆。
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead id="tableHead">
+            <tr>
+              <th>資料載入中...</th>
+            </tr>
+          </thead>
+
+          <tbody id="dataTable">
+            <tr>
+              <td>資料載入中...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <button id="prevPageBtn">上一頁</button>
+        <span id="pageInfo">第 1 頁 / 共 1 頁</span>
+        <button id="nextPageBtn">下一頁</button>
+      </div>
+    </section>
+
+    <div class="footer">
+      © 2026 Taiwan AQI Dashboard | Portfolio Project
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
